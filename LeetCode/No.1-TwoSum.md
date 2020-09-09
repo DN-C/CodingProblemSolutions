@@ -54,7 +54,7 @@ class Solution {
         int numsLength = nums.length;
         for(int i = 0; i < numsLength; i++) {
             int tempNum = target - nums[i];
-            for (int j = i; j < numsLength; j++) {
+            for (int j = i + 1; j < numsLength; j++) {
                 if (nums[j] == tempNum){
                     return new int[] {i, j};
                 }
