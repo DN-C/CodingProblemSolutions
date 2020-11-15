@@ -36,31 +36,32 @@ Output: []
 
 ## Thinking
 
-1. (It can't pass all tests!) Reuse the code in No.1 2Sum. Loop in the given array, and take every -nums[i] as target, then use 2Sum code to find any two numbers sums to -nums[i].
+1. Reuse the code in No.1 2Sum. Loop in the given array, and take every -nums[i] as target. Then use 2Sum codes to find any two numbers which sums up to -nums[i]. Besides, I used many tricks to improve its speed, like after sorting the array, if nums[0] > 0, it means that it's impossible to take any 3 numbers in array to sums up to 3 since the minimum is larger than 0. What's more, When in loop, jump all the duplicated numbers. But still, it's a slow one with many workarounds.
 2. Same logic as the first one. But use two pointer instead of HashMap to find 2 numbers sums to -nums[i]
 
 ## Solutions
 
 ~~~java
 // Solution 1
-// Once again, it can't pass all tests!!!
 class Solution {
     public List<List<Integer>> threeSum(int[] nums) {
         if (nums.length <= 2) return new ArrayList<>(); 
         int len = nums.length;
         Arrays.sort(nums);
+        if (nums[0] > 0) return new ArrayList<>();
         HashSet<ArrayList<Integer>> lists = new HashSet<>();
         for(int i = 0; i < len; i++) {
-            int target = -nums[i];
-            HashSet<Integer> set = new HashSet<Integer>();
-            for (int j = 0; j < len; j++) {
-                if (j == i) continue;
-                if (set.contains(target - nums[j])) {
-                    ArrayList<Integer> tempList = new ArrayList<Integer>(Arrays.asList(nums[i], target - nums[j], nums[j])); 
-                    Collections.sort(tempList);
-                    lists.add(tempList); 
+            if (i == 0 || nums[i] != nums[i - 1]) {
+                int target = -nums[i];
+                HashSet<Integer> set = new HashSet<Integer>();
+                for (int j = i + 1; j < len; j++) {
+                    if (set.contains(target - nums[j])) {
+                        ArrayList<Integer> tempList = new ArrayList<Integer>(Arrays.asList(nums[i], target - nums[j], nums[j])); 
+                        Collections.sort(tempList);
+                        lists.add(tempList); 
+                    }
+                    set.add(nums[j]);
                 }
-                set.add(nums[j]);
             }
         }
         List<List<Integer>> res = new ArrayList<>();
@@ -72,6 +73,35 @@ class Solution {
 }
 
 //Solution 2
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        if (nums.length <= 2) return new ArrayList<>(); 
+        int len = nums.length;
+        Arrays.sort(nums);
+        HashSet<List<Integer>> lists = new HashSet<>();
+        for(int i = 0; i < len; i++) {
+            int target = -nums[i];
+            int start = i + 1, end = len - 1;
+            while(start < end) {
+                int sum = nums[start] + nums[end]; 
+                if (sum < target) start++;
+                else if (sum > target) end--;
+                else {
+                    lists.add(Arrays.asList(nums[start], nums[end], nums[i]));
+                    while(start < len - 1 && nums[start] == nums[start + 1]) start++;
+                    while(end > 0 && nums[end] == nums[end - 1]) end--;
+                    start++; 
+                    end--;
+                }
+            }
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        for(List<Integer> list : lists) {
+            res.add(list);
+        }
+        return res;
+    }
+}
 ~~~
 
 
